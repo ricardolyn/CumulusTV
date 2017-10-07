@@ -41,6 +41,7 @@ import com.google.android.media.tv.companionlibrary.utils.TvContractUtils;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 
@@ -312,17 +313,21 @@ public class CumulusTvTifService extends BaseTvInputService {
             tuneTime = System.currentTimeMillis();
             stillTuning = true;
 
+
             // Update our channel
-            for (String mediaUrl : ChannelDatabase.getInstance(mContext).getHashMap().keySet()) {
-                if (ChannelDatabase.getInstance(mContext).getHashMap().get(mediaUrl) ==
-                        Long.parseLong(channelUri.getLastPathSegment())) {
-                    jsonChannel = ChannelDatabase.getInstance(mContext)
-                            .findChannelByMediaUrl(mediaUrl);
+            final HashMap<String, Long> hashMap = ChannelDatabase.getInstance(mContext).getHashMap();
+            if(hashMap != null && !hashMap.isEmpty()) {
+                for (String mediaUrl : hashMap.keySet()) {
+                    if (hashMap.get(mediaUrl) ==
+                            Long.parseLong(channelUri.getLastPathSegment())) {
+                        jsonChannel = ChannelDatabase.getInstance(mContext)
+                                .findChannelByMediaUrl(mediaUrl);
+                    }
                 }
+                notifyVideoAvailable();
+                setOverlayViewEnabled(false);
+                setOverlayViewEnabled(true);
             }
-            notifyVideoAvailable();
-            setOverlayViewEnabled(false);
-            setOverlayViewEnabled(true);
             return super.onTune(channelUri);
         }
 

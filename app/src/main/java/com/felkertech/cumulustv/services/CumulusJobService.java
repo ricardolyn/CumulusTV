@@ -23,7 +23,6 @@ import com.felkertech.cumulustv.tv.activities.PlaybackQuickSettingsActivity;
 import com.felkertech.cumulustv.utils.AppUtils;
 import com.felkertech.n.cumulustv.R;
 import com.google.android.media.tv.companionlibrary.EpgSyncJobService;
-import com.google.android.media.tv.companionlibrary.XmlTvParser;
 import com.google.android.media.tv.companionlibrary.model.Advertisement;
 import com.google.android.media.tv.companionlibrary.model.Channel;
 import com.google.android.media.tv.companionlibrary.model.InternalProviderData;
@@ -114,9 +113,8 @@ public class CumulusJobService extends EpgSyncJobService {
                                 channels.get(i).getInternalProviderData().getVideoUrl());
                 Channel channel = new Channel.Builder(channels.get(i))
                     .setAppLinkText(getString(R.string.quick_settings))
-                    .setAppLinkIconUri("https://github.com/Fleker/CumulusTV/blob/master/app/src/m" +
-                        "ain/res/drawable-xhdpi/ic_play_action_normal.png?raw=true")
-                    .setAppLinkPosterArtUri(channels.get(i).getChannelLogo())
+                        .setAppLinkIconUri(jsonChannel != null ? jsonChannel.getLogo() : null)
+                        .setAppLinkPosterArtUri(jsonChannel != null ? jsonChannel.getLogo() : null)
                     .setAppLinkIntent(PlaybackQuickSettingsActivity.getIntent(this, jsonChannel))
                     .build();
                 Log.d(TAG, "Adding channel " + channel.getDisplayName());
@@ -140,7 +138,7 @@ public class CumulusJobService extends EpgSyncJobService {
         JsonChannel jsonChannel = channelDatabase.findChannelByMediaUrl(
                 channel.getInternalProviderData().getVideoUrl());
 
-        if (jsonChannel != null && jsonChannel.getEpgUrl() != null &&
+        if (false && jsonChannel != null && jsonChannel.getEpgUrl() != null &&
                 !jsonChannel.getEpgUrl().isEmpty() && epgData.containsKey(jsonChannel.getEpgUrl())) {
             List<Program> programForGivenTime = new ArrayList<>();
             CumulusXmlParser.TvListing tvListing = epgData.get(jsonChannel.getEpgUrl());
@@ -170,8 +168,8 @@ public class CumulusJobService extends EpgSyncJobService {
                         .setDescription(currentProgram.getDescription())
                         .setContentRatings(currentProgram.getContentRatings())
                         .setCanonicalGenres(currentProgram.getCanonicalGenres())
-                        .setPosterArtUri(currentProgram.getPosterArtUri())
-                        .setThumbnailUri(currentProgram.getThumbnailUri())
+                        .setPosterArtUri(channel.getChannelLogo())
+                        .setThumbnailUri(channel.getChannelLogo())
                         .setInternalProviderData(currentProgram.getInternalProviderData())
                         .setStartTimeUtcMillis(programStartTimeMs)
                         .setEndTimeUtcMillis(programEndTimeMs)
@@ -183,10 +181,10 @@ public class CumulusJobService extends EpgSyncJobService {
         } else {
             programs.add(new Program.Builder()
                     .setInternalProviderData(channel.getInternalProviderData())
-                    .setTitle(channel.getDisplayName() + " Live")
+                    .setTitle(channel.getDisplayName())
                     .setDescription(getString(R.string.currently_streaming))
-                    .setPosterArtUri(channel.getChannelLogo())
-                    .setThumbnailUri(channel.getChannelLogo())
+                    .setPosterArtUri(jsonChannel != null ? jsonChannel.getLogo() : null)
+                    .setThumbnailUri(jsonChannel != null ? jsonChannel.getLogo() : null)
                     .setCanonicalGenres(jsonChannel != null ? jsonChannel.getGenres() : null)
                     .setStartTimeUtcMillis(startMs)
                     .setEndTimeUtcMillis(startMs + 1000 * 60 * 60) // 60 minutes
