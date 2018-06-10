@@ -52,6 +52,7 @@ public class ListingPlugin extends CumulusTvPlugin {
         setProprietaryEditing(false);
         Fabric.with(this, new Crashlytics());
         Intent i = getIntent();
+        ((EditText) findViewById(R.id.edit_url)).setText("http://monadtek.com/static/iptv_id.m3u");
         if(i.getAction() != null && (i.getAction().equals(Intent.ACTION_SEND) ||
                 i.getAction().equals(Intent.ACTION_VIEW))) {
             final Uri uri = getIntent().getData();

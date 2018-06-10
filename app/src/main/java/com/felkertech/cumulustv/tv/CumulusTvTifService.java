@@ -315,20 +315,14 @@ public class CumulusTvTifService extends BaseTvInputService {
 
 
             // Update our channel
-            if (ChannelDatabase.getInstance(mContext).getHashMap() == null) {
-                notifyVideoUnavailable(TvInputManager.VIDEO_UNAVAILABLE_REASON_UNKNOWN);
-                Toast.makeText(mContext, "Channel HashMap is null", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            for (String mediaUrl : ChannelDatabase.getInstance(mContext).getHashMap().keySet()) {
-                if (channelUri == null) {
-                    Toast.makeText(mContext, "channelUri is null", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                if (ChannelDatabase.getInstance(mContext).getHashMap().get(mediaUrl) ==
-                        Long.parseLong(channelUri.getLastPathSegment())) {
-                    jsonChannel = ChannelDatabase.getInstance(mContext)
-                            .findChannelByMediaUrl(mediaUrl);
+            final HashMap<String, Long> hashMap = ChannelDatabase.getInstance(mContext).getHashMap();
+            if(hashMap != null && !hashMap.isEmpty()) {
+                for (String mediaUrl : hashMap.keySet()) {
+                    if (hashMap.get(mediaUrl) ==
+                            Long.parseLong(channelUri.getLastPathSegment())) {
+                        jsonChannel = ChannelDatabase.getInstance(mContext)
+                                .findChannelByMediaUrl(mediaUrl);
+                    }
                 }
                 notifyVideoAvailable();
                 setOverlayViewEnabled(false);
